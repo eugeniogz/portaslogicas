@@ -7,11 +7,10 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Portas Lógicas',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
@@ -31,10 +30,17 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  bool out = false;
+  bool out = true;
   bool a = false;
   bool b = false;
-  Porta p = Porta.xor;
+  Porta p = Porta.not;
+  void setPorta(Porta p) {
+    setState(() {
+      this.p = p;
+      setarOut();
+    });
+  }
+
   void setOutput(int input) {
     setState(() {
       if (input == 1) {
@@ -42,16 +48,21 @@ class _MyHomePageState extends State<MyHomePage> {
       } else {
         b = !b;
       }
-      if (p.name == "xor") {
-        out = a ^ b;
-      } else if (p.name == "or") {
-        out = a || b;
-      } else if (p.name == "and") {
-        out = a && b;
-      } else if (p.name == "not") {
-        out = !a;
-      }
+      setarOut();
     });
+  }
+
+  void setarOut() {
+    if (p == Porta.xor) {
+      out = a ^ b;
+    } else if (p == Porta.or) {
+      out = a || b;
+    } else if (p == Porta.and) {
+      out = a && b;
+    } else if (p == Porta.not) {
+      out = !a;
+      b = false;
+    }
   }
 
   @override
@@ -60,36 +71,99 @@ class _MyHomePageState extends State<MyHomePage> {
     // by the setOutput method above.
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          title: Text(widget.title),
+        ),
+        body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            TextButton(
+            Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+              BotaoPorta(
+                  title: "INVERTER",
+                  porta: Porta.not,
+                  portaAtual: p,
+                  setPorta: setPorta),
+              BotaoPorta(
+                  title: "OU",
+                  porta: Porta.or,
+                  portaAtual: p,
+                  setPorta: setPorta),
+              BotaoPorta(
+                  title: "E",
+                  porta: Porta.and,
+                  portaAtual: p,
+                  setPorta: setPorta),
+              BotaoPorta(
+                  title: "DIFERENTE",
+                  porta: Porta.xor,
+                  portaAtual: p,
+                  setPorta: setPorta),
+            ]),
+            const Text(""),
+            GestureDetector(
+                // //Opção para alterar o estado somente quando pressionar e voltar quando soltar
+                // onTapDown: (TapDownDetails? td) {setOutput(1);},
+                // onTapCancel: () {setOutput(1);},
+                child: TextButton(
               onPressed: () {
                 setOutput(1);
               },
-              style: ButtonStyle(backgroundColor: MaterialStateColor.resolveWith((states) => a ? Colors.amber : Colors.grey ) ),
-              child: const Text("A"),
-            ),
-            TextButton(
-              onPressed: () {
-                setOutput(2);
-              },
-              style: ButtonStyle(backgroundColor: MaterialStateColor.resolveWith((states) => b ? Colors.amber : Colors.grey ) ),
-              child: const Text("B"),
-            ),
+              style: ButtonStyle(
+                  backgroundColor: MaterialStateColor.resolveWith(
+                      (states) => a ? Colors.amber : Colors.grey)),
+              child: Icon(a ? Icons.thumb_up : Icons.thumb_down),
+            )),
+            const Text(""),
+            p != Porta.not
+                ? TextButton(
+                    onPressed: () {
+                      setOutput(2);
+                    },
+                    style: ButtonStyle(
+                        backgroundColor: MaterialStateColor.resolveWith(
+                            (states) => b ? Colors.amber : Colors.grey)),
+                    child: Icon(b ? Icons.thumb_up : Icons.thumb_down),
+                  )
+                : const Text(""),
+            const Text(""),
             Icon(
-              Icons.baby_changing_station,
+              out ? Icons.thumb_up : Icons.thumb_down,
               color: out ? Colors.amber : Colors.grey,
             ),
           ],
-        ),
-      ),
-    );
+        ));
+  }
+}
+
+class BotaoPorta extends StatelessWidget {
+  final Porta porta;
+  final Porta portaAtual;
+  final Function setPorta;
+  final String title;
+
+  const BotaoPorta(
+      {super.key,
+      required this.title,
+      required this.porta,
+      required this.portaAtual,
+      required this.setPorta});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(children: [
+      TextButton(
+          onPressed: () {
+            setPorta(porta);
+          },
+          style: ButtonStyle(
+              backgroundColor: MaterialStateColor.resolveWith((states) =>
+                  portaAtual == porta
+                      ? Colors.deepPurple.shade100
+                      : Colors.grey)),
+          child: Text(title)),
+      const Text(" ")
+    ]);
   }
 }
 
