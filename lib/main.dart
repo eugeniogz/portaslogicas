@@ -53,8 +53,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void setarOut() {
-    if (p == Porta.xor) {
-      out = a ^ b;
+    if (p == Porta.nxor) {
+      out = !(a ^ b);
     } else if (p == Porta.or) {
       out = a || b;
     } else if (p == Porta.and) {
@@ -80,7 +80,7 @@ class _MyHomePageState extends State<MyHomePage> {
           children: <Widget>[
             Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
               BotaoPorta(
-                  title: "INVERTER",
+                  title: "NÃO",
                   porta: Porta.not,
                   portaAtual: p,
                   setPorta: setPorta),
@@ -95,8 +95,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   portaAtual: p,
                   setPorta: setPorta),
               BotaoPorta(
-                  title: "DIFERENTE",
-                  porta: Porta.xor,
+                  title: "IGUAL",
+                  porta: Porta.nxor,
                   portaAtual: p,
                   setPorta: setPorta),
             ]),
@@ -167,4 +167,4 @@ class BotaoPorta extends StatelessWidget {
   }
 }
 
-enum Porta { not, and, or, xor }
+enum Porta { not, and, or, nxor }
