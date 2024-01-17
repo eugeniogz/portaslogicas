@@ -1,6 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:window_manager/window_manager.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await windowManager.ensureInitialized();
+
+  // Use it only after calling `hiddenWindowAtLaunch`
+  windowManager.waitUntilReadyToShow().then((_) async {
+    // Hide window title bar
+    await windowManager.setTitleBarStyle(TitleBarStyle.hidden);
+    await windowManager.setFullScreen(true);
+    await windowManager.center();
+    await windowManager.show();
+    await windowManager.setSkipTaskbar(false);
+  });
   runApp(const MyApp());
 }
 
